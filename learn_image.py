@@ -2,16 +2,30 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('pics/pessoas.jpg', cv2.IMREAD_GRAYSCALE)
-cv2.namedWindow('title of the window')
-cv2.imshow('title of the window', img)
-key = cv2.waitKey(0) & 0xFF #time in miliseconds!
-if key == 27: # this is ESC, but I'll look for a flag with this value
-    print('Exit without saving.')
-    cv2.destroyAllWindows()
-elif key == ord('s'):
-    print('Saving and exiting.')
-    cv2.imwrite('graypeople.png', img)
-    cv2.destroyAllWindows()
-else:
-    print('Key has a weird value.')
+def detect(image):
+    height, width, depth = image.shape
+    classifier = cv2.CascadeClassifier('Detector_XML/haarcascade_frontalface_alt.xml')
+    DOWNSCALE = 4
+    minisize = (int(width/DOWNSCALE), int(height/DOWNSCALE))
+    # smallimg = cv2.resize(image, minisize)
+    faces = classifier.detectMultiScale(image)
+    print("Foram encontradas %s faces" % len(faces))
+
+
+img = cv2.imread('pics/pessoas.jpg', cv2.IMREAD_COLOR)
+detect(img)
+
+img = img[:, :, ::-1]
+
+plt.imshow(img, interpolation = 'bicubic')
+plt.title('People')
+plt.xticks([]), plt.yticks([])
+plt.show()
+
+# print('Choose which input method you want:')
+# print('1 - Load local file')
+#print('2 - Use webcam')
+#print('3 - Download file')
+#option = input()
+
+#print(option)
